@@ -28,3 +28,9 @@ p {
 figure {
   margin: 0;
 }
+
+button {
+  display: block;
+  outline: none;
+  border: none;
+}

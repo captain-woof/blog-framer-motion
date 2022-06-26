@@ -10,29 +10,14 @@
 
     .carousel {
         margin-top: 3rem;
-        position: relative;
         overflow-x: hidden;
-
-        .carousel-sentinel-container {
-            overflow-x: scroll;
-
-            .carousel-sentinel-container__sentinel {
-            }
-        }
+        position: relative;
 
         .carousel-container {
             display: grid;
             grid-auto-flow: column;
             grid-auto-columns: 27%;
-            scrollbar-width: none;
             cursor: move;
-            position: absolute;
-            top: 0;
-            left: 0;
-
-            &::-webkit-scrollbar {
-                display: none;
-            }
 
             .carousel-container__post {
                 width: 100%;
@@ -67,6 +52,23 @@
                     white-space: break-spaces;
                     user-select: none;
                     pointer-events: none;
+                }
+            }
+        }
+
+        .carousel-scrollbar {
+            position: relative;
+            width: 100%;
+
+            .carousel-scrollbar__bar {
+                height: 0.5rem;
+                width: 128px;
+                background-color: #919191;
+                border-radius: 50rem;
+                cursor: pointer;
+
+                &:active {
+                    background-color: #7c7c7c;
                 }
             }
         }

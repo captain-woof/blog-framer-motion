@@ -1,5 +1,8 @@
-import { motion, useElementScroll, useSpring, useTransform } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { motion, useAnimation, useElementScroll, useSpring, useTransform } from "framer-motion";
+import { useCallback, useEffect, useRef, useState, WheelEvent } from "react";
+import { useCustomScrollbar } from "../../../hooks/useCustomScrollbar";
+import { useKeyboardScroll } from "../../../hooks/useKeyboardScroll";
+import { useMobileScroll } from "../../../hooks/useMobileScroll";
 import { usePosts } from "../../../hooks/usePosts";
 import "./styles.scss";
 
@@ -7,44 +10,28 @@ export default function PostsCarousel() {
 
     const { data, isError, isFetched, isLoading, isSuccess } = usePosts();
 
-    // Set width of sentinel element
-    const carouselContainerRef = useRef<HTMLDivElement | null>(null);
-    const [sentinelDimension, setSentinelDimension] = useState<{ height: number, width: number }>({ height: 0, width: 0 });
-    useEffect(() => {
-        const updateSentinelWidth = () => {
-            if (!!carouselContainerRef.current) {
-                let newSentinelWidth = 0;
-                for (let postEle of carouselContainerRef.current.children) {
-                    newSentinelWidth += postEle.clientWidth;
-                }
-                setSentinelDimension({ width: newSentinelWidth, height: carouselContainerRef.current.clientHeight });
-            }
-        }
-        window.addEventListener("load", updateSentinelWidth);
-        window.addEventListener("resize", updateSentinelWidth);
+    // For mobile scrolling
+    const { carouselContainerRef, carouselScrollWidth, setNewCarouselWidth } = useMobileScroll();
 
-        return () => {
-            window.removeEventListener("load", updateSentinelWidth);
-            window.removeEventListener("resize", updateSentinelWidth);
-        }
-    }, [carouselContainerRef, data]);
+    // For keyboard scrolling
+    const { handleKeyboardScrolling, keyboardScrollAnim, setHover } = useKeyboardScroll(carouselScrollWidth, carouselContainerRef);
 
-    // For smooth scroll
-    const scrollRef = useRef<HTMLDivElement | null>(null);
-    const { scrollX: carouselScrollX } = useElementScroll(scrollRef);
-    const scrollXActual = useTransform(carouselScrollX, (scrollXVal) => (-scrollXVal));
-    const scrollXSmooth = useSpring(scrollXActual, { mass: 2, damping: 30 });
+    // For custom scrollbar
+    const { scrollbarDragControls, startScrollbarDrag, scrollbarContainerRef, scrollbarDragMotionValue, carouselX } = useCustomScrollbar(carouselScrollWidth);
 
-    // For smooth scroll on mobile
-    const [isBeingPanned, setIsBeingPanned] = useState<boolean>(false);
 
     return (
-        <div className="carousel">
 
-            <motion.div className="carousel-container" ref={carouselContainerRef} style={{ x: scrollXSmooth, pointerEvents: isBeingPanned ? "none" : "auto" }}
-                onTouchStart={() => { setIsBeingPanned(true) }}
-                onTouchEnd={() => { setIsBeingPanned(false) }}
-            >
+        <div className="carousel" onWheel={handleKeyboardScrolling}
+            onMouseEnter={() => { setHover(true) }}
+            onMouseLeave={() => { setHover(false) }}
+        >
+
+            {/* Actual carousel */}
+            <motion.div className="carousel-container" ref={carouselContainerRef} drag="x" dragConstraints={{
+                right: 0,
+                left: -(carouselScrollWidth - (carouselContainerRef.current?.clientWidth || 0))
+            }} onLoad={setNewCarouselWidth} animate={keyboardScrollAnim} transition={{ duration: 0.5 }} style={{ x: carouselX }}>
                 {isFetched &&
                     data?.map(({ author, content, id }) => (
                         <figure key={id} className="carousel-container__post" onClick={() => { console.log("select") }}>
@@ -58,13 +45,10 @@ export default function PostsCarousel() {
                 }
             </motion.div>
 
-            <div className="carousel-sentinel-container" ref={scrollRef}>
-                <div className="carousel-sentinel-container__sentinel" style={{
-                    width: `${sentinelDimension.width}px`,
-                    height: `${sentinelDimension.height}px`,
-                }} />
-            </div>
-
+            {/* Custom scrollbar */}
+            <motion.div className="carousel-scrollbar" onPointerDown={startScrollbarDrag} ref={scrollbarContainerRef}>
+                <motion.button className="carousel-scrollbar__bar" aria-label="Scroll bar" drag="x" dragControls={scrollbarDragControls} dragConstraints={scrollbarContainerRef} dragTransition={{ bounceDamping: 50 }} style={{ x: scrollbarDragMotionValue }} />
+            </motion.div>
         </div>
     );
 }
