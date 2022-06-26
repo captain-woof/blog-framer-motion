@@ -8,47 +8,68 @@
         margin-top: 8rem;
     }
 
-    .carousel-container {
-        display: grid;
-        grid-auto-flow: column;
-        grid-auto-columns: 27%;
-        cursor: move;
+    .carousel {
         margin-top: 3rem;
-        overflow-x: auto;
+        overflow-x: hidden;
+        position: relative;
 
-        .carousel-container__post {
-            width: 100%;
-            position: relative;
-            overflow: hidden;
+        .carousel-container {
+            display: grid;
+            grid-auto-flow: column;
+            grid-auto-columns: 27%;
+            cursor: move;
 
-            .carousel-container__post__image {
+            .carousel-container__post {
                 width: 100%;
-                aspect-ratio: 16 / 9;
-                object-fit: cover;
-                z-index: 1;
-                filter: brightness(85%) grayscale(100%);
-                transition: all 0.75s cubic-bezier(0.86, 0, 0.07, 1);
-                display: block;
+                position: relative;
+                overflow: hidden;
 
-                &:hover {
-                    transform: scale(1.1);
-                    filter: brightness(100%) grayscale(0%);
+                .carousel-container__post__image {
+                    width: 100%;
+                    aspect-ratio: 16 / 9;
+                    object-fit: cover;
+                    z-index: 1;
+                    filter: brightness(85%) grayscale(100%);
+                    transition: all 0.75s cubic-bezier(0.86, 0, 0.07, 1);
+                    display: block;
+
+                    &:hover {
+                        transform: scale(1.1);
+                        filter: brightness(100%) grayscale(0%);
+                    }
+                }
+
+                .carousel-container__post__caption {
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    z-index: 2;
+                    color: #fff;
+                    text-align: center;
+                    font-size: 0.85rem;
+                    text-transform: capitalize;
+                    white-space: break-spaces;
+                    user-select: none;
+                    pointer-events: none;
                 }
             }
+        }
 
-            .carousel-container__post__caption {
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                z-index: 2;
-                color: #fff;
-                text-align: center;
-                font-size: 0.85rem;
-                text-transform: capitalize;
-                white-space: break-spaces;
-                user-select: none;
-                pointer-events: none;
+        .carousel-scrollbar {
+            position: relative;
+            width: 100%;
+
+            .carousel-scrollbar__bar {
+                height: 0.5rem;
+                width: 128px;
+                background-color: #919191;
+                border-radius: 50rem;
+                cursor: pointer;
+
+                &:active {
+                    background-color: #7c7c7c;
+                }
             }
         }
     }
