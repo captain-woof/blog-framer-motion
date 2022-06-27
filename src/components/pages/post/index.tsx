@@ -38,7 +38,7 @@ export default function PostPage() {
                 {/* Post content */}
                 <section className="post-page-container__article__body read">
                     {post?.content.body.split("\n").map((paragraphText, index) => (
-                        <p className="post-page-container__article__body__paragraph">
+                        <p className="post-page-container__article__body__paragraph" key={index}>
                             {paragraphText}
                         </p>
                     ))}
