@@ -1,5 +1,6 @@
 import { motion, useAnimation, useElementScroll, useSpring, useTransform } from "framer-motion";
 import { useCallback, useEffect, useRef, useState, WheelEvent } from "react";
+import { Link } from "react-router-dom";
 import { useCustomScrollbar } from "../../../hooks/useCustomScrollbar";
 import { useKeyboardScroll } from "../../../hooks/useKeyboardScroll";
 import { useMobileScroll } from "../../../hooks/useMobileScroll";
@@ -34,13 +35,15 @@ export default function PostsCarousel() {
             }} onLoad={setNewCarouselWidth} animate={keyboardScrollAnim} transition={{ duration: 0.5 }} style={{ x: carouselX }}>
                 {isFetched &&
                     data?.map(({ author, content, id }) => (
-                        <figure key={id} className="carousel-container__post" onClick={() => { console.log("select") }}>
-                            <img src={content.heroImage} alt={content.title} className="carousel-container__post__image"></img>
-                            <figcaption className="carousel-container__post__caption">
-                                <b>{content.title}</b><br />
-                                - <i>{author.name}</i>
-                            </figcaption>
-                        </figure>
+                        <Link key={id} to={`/post/${id}`}>
+                            <figure className="carousel-container__post" onClick={() => { console.log("select") }}>
+                                <img src={content.heroImage} alt={content.title} className="carousel-container__post__image"></img>
+                                <figcaption className="carousel-container__post__caption">
+                                    <b>{content.title}</b><br />
+                                    - <i>{author.name}</i>
+                                </figcaption>
+                            </figure>
+                        </Link>
                     ))
                 }
             </motion.div>
