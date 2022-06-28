@@ -1,6 +1,6 @@
 import posts from "./data.json";
 
-type Post = {
+export type Post = {
     id: number,
     author: {
         id: number

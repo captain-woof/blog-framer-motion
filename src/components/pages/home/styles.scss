@@ -8,6 +8,16 @@
         margin-top: 8rem;
     }
 
+    .selected-post-hero-img {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 33vh;
+        object-fit: cover;
+        display: block;
+    }
+
     .carousel {
         margin-top: 3rem;
         overflow-x: hidden;
