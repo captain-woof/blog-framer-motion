@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useParams } from "react-router-dom"
 import { usePosts } from "../../../hooks/usePosts";
+import { motion, Variants } from "framer-motion";
 import "./styles.scss";
 
 export default function PostPage() {
@@ -10,19 +11,45 @@ export default function PostPage() {
     const { data } = usePosts();
     const post = useMemo(() => data?.find((post) => post.id.toString() === params.id), [data, params]);
 
-    return (
-        <main className="post-page-container">
+    // For post variants
+    const variants: Variants = useMemo(() => ({
+        initial: {
+            y: 50,
+            opacity: 0
+        },
+        animate: {
+            y: 0,
+            opacity: 1,
+            transition: {
+                duration: 0.35,
+                ease: "easeOut"
+            }
+        }
+    }), []);
 
-            <article className="post-page-container__article">
+    const variantsStagger: Variants = useMemo(() => ({
+        animate: {
+            transition: {
+                staggerChildren: 0.1
+            }
+        }
+    }), []);
+
+    return (
+        <motion.main className="post-page-container" initial="initial" animate="animate" exit="exit" variants={variantsStagger}>
+
+            <motion.article className="post-page-container__article">
 
                 {/* Hero image */}
                 <img src={post?.content.heroImage} alt={post?.content.title} className="post-page-container__article__heroImage" />
 
                 {/* Post title */}
-                <h1 className="post-page-container__article__title read">{post?.content.title}</h1>
+                <motion.h1 className="post-page-container__article__title read" variants={variants}>
+                    {post?.content.title}
+                </motion.h1>
 
                 {/* Author and date of publication */}
-                <section className="post-page-container__article__authorAndDate read">
+                <motion.section className="post-page-container__article__authorAndDate read" variants={variants}>
                     {/* Author details */}
                     <div className="post-page-container__article__authorAndDate__authorContainer">
                         <img className="post-page-container__article__authorAndDate__authorContainer__dp" src={post?.author.profilePic} alt={`Profile picture of ${post?.author.name}`} />
@@ -33,18 +60,18 @@ export default function PostPage() {
                     <time dateTime={(new Date(!!post?.date ? (post.date * 1000) : 0)).toISOString()} className="post-page-container__article__authorAndDate__date">
                         {(new Date(!!post?.date ? (post.date * 1000) : 0)).toLocaleString()}
                     </time>
-                </section>
+                </motion.section>
 
                 {/* Post content */}
-                <section className="post-page-container__article__body read">
+                <motion.section className="post-page-container__article__body read" variants={variantsStagger}>
                     {post?.content.body.split("\n").map((paragraphText, index) => (
-                        <p className="post-page-container__article__body__paragraph" key={index}>
+                        <motion.p className="post-page-container__article__body__paragraph" variants={variants} key={index}>
                             {paragraphText}
-                        </p>
+                        </motion.p>
                     ))}
-                </section>
+                </motion.section>
 
-            </article>
-        </main>
+            </motion.article>
+        </motion.main>
     )
 }
